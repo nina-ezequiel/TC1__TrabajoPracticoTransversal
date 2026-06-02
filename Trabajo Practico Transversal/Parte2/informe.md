@@ -3,7 +3,7 @@ Todas las transiciones se almacenan en un arreglo dinámico (DeltaEntry* delta) 
 
 Las razones de esta elección son:
 
-  **Unificación**: La misma estructura funciona para AFD y AFND (el destino puede ser uno o varios).
+  \underline{**Unificación**}: La misma estructura funciona para AFD y AFND (el destino puede ser uno o varios).
   
   **Corrección matemática**: Modela exactamente δ: Q × Σ → P(Q).
   

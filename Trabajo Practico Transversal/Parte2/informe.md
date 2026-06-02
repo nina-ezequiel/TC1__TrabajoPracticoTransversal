@@ -14,7 +14,7 @@ Las razones de esta elección son:
   Reutilización – Aprovecha los TAD String y Tree ya implementados.
   
   Extensibilidad – Facilita futuras operaciones (determinización, minimización, etc.).
-
+$\frac{1}{2}$
 
 
 

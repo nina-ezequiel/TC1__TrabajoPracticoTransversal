@@ -16,8 +16,12 @@ Las razones de esta elección son:
   Extensibilidad – Facilita futuras operaciones (determinización, minimización, etc.).
 
 
+
+
 Además, el uso de delta y deltaCount permite:
 
   Agregar transiciones dinámicamente con realloc.
+  
   Recorrer todas las transiciones fácilmente con un bucle for.
+  
   Conocer en todo momento cuántas transiciones tiene el autómata.

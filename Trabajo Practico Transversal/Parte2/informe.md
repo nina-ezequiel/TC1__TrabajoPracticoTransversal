@@ -4,11 +4,17 @@ Todas las transiciones se almacenan en un arreglo dinámico (DeltaEntry* delta) 
 Las razones de esta elección son:
 
   Unificación – La misma estructura funciona para AFD y AFND (el destino puede ser uno o varios).
+  
   Corrección matemática – Modela exactamente δ: Q × Σ → P(Q).
+  
   Reconocimiento unificado – El algoritmo de aceptación maneja por igual ambos tipos de autómata.
+  
   Entrada sencilla – El parseo soporta destinos únicos o múltiples (con llaves) de forma natural.
+  
   Reutilización – Aprovecha los TAD String y Tree ya implementados.
+  
   Extensibilidad – Facilita futuras operaciones (determinización, minimización, etc.).
+
 
 Además, el uso de delta y deltaCount permite:
 

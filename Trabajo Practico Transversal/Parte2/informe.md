@@ -3,25 +3,23 @@ Todas las transiciones se almacenan en un arreglo dinámico (DeltaEntry* delta) 
 
 Las razones de esta elección son:
 
-  Unificación – La misma estructura funciona para AFD y AFND (el destino puede ser uno o varios).
+  **Unificación**: La misma estructura funciona para AFD y AFND (el destino puede ser uno o varios).
   
-  Corrección matemática – Modela exactamente δ: Q × Σ → P(Q).
+  **Corrección matemática**: Modela exactamente δ: Q × Σ → P(Q).
   
-  Reconocimiento unificado – El algoritmo de aceptación maneja por igual ambos tipos de autómata.
+  **Reconocimiento unificado**: El algoritmo de aceptación maneja por igual ambos tipos de autómata.
   
-  Entrada sencilla – El parseo soporta destinos únicos o múltiples (con llaves) de forma natural.
+  **Entrada sencilla**: El parseo soporta destinos únicos o múltiples (con llaves) de forma natural.
   
-  Reutilización – Aprovecha los TAD String y Tree ya implementados.
+  **Reutilización**: Aprovecha los TAD String y Tree ya implementados.
   
-  Extensibilidad – Facilita futuras operaciones (determinización, minimización, etc.).
-$\frac{1}{2}$
-
+  **Extensibilidad**: Facilita futuras operaciones (determinización, minimización, etc.).
 
 
 Además, el uso de delta y deltaCount permite:
 
-  Agregar transiciones dinámicamente con realloc.
+  _Agregar transiciones dinámicamente con realloc.
   
-  Recorrer todas las transiciones fácilmente con un bucle for.
+  _Recorrer todas las transiciones fácilmente con un bucle for.
   
-  Conocer en todo momento cuántas transiciones tiene el autómata.
+  _Conocer en todo momento cuántas transiciones tiene el autómata.

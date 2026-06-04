@@ -23,26 +23,28 @@ typedef struct {
 	tData F;              // conjunto de estados finales (SET)
 } Automata;
 
-// Creacion y destruccion
-Automata* newEmptyAF(void);
-Automata* createAFinteractive(void);
-void freeAF(Automata* af);
+typedef Automata* Af;
+
+// Creación y destrucción
+Af newEmptyAF(void);
+Af createAFinteractive(void);
+void freeAF(Af af);
 
 // Consulta de los componentes de la 5-upla
-tData getStates(const Automata* af);
-tData getAlphabet(const Automata* af);
-State getInitial(const Automata* af);
-tData getFinals(const Automata* af);
-DeltaEntry* getDelta(const Automata* af);
-int getDeltaCount(const Automata* af);
+tData getStates(const Af af);
+tData getAlphabet(const Af af);
+State getInitial(const Af af);
+tData getFinals(const Af af);  
+DeltaEntry* getDelta(const Af af);
+int getDeltaCount(const Af af);
 
 // Propiedades y reconocimiento
-int isDeterministic(const Automata* af);
-int acceptString(Automata* af, str cadena);
-int acceptHardcoded(Automata* af, const char* cadena);
-int acceptFromConsole(Automata* af);
+int isDeterministic(const Af af);
+int acceptString(const Af af, str cadena);
+int acceptHardcoded(const Af af, const char* cadena);
+int acceptFromConsole(const Af af);
 
 // Utilidad
-void printAF(const Automata* af);
+void printAF(const Af af);
 
 #endif

@@ -1,3 +1,6 @@
+#ifndef STRING_H
+#define STRING_H
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -5,6 +8,7 @@ typedef struct nodo {
 	char car;       
 	struct nodo *next; 
 } T_nodo;
+
 typedef T_nodo* str;
 
 str createStr(); 						// Crea y retorna una cadena vacía (str = NULL)
@@ -21,3 +25,5 @@ void limpiarBuffer();					// Modulo auxiliar para limpiar el buffer
 str crearNodo(char c); 					// Crea un nuevo nodo con el carácter especificado
 void freeStr(str* s); 					// Libera toda la memoria utilizada por una cadena
 str copyStr(str s);             		// Copia cadena
+
+#endif

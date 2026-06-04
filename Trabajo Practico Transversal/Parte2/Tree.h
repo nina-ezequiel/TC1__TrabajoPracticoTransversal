@@ -49,5 +49,6 @@ tData strToList(tData str);								// Conversion STR -> LIST
 tData listToStr(tData list);							// Conversion LIST -> STR
 tData strToSet(tData str);								// Conversion STR -> SETtData setToStr(tData set);								
 tData setToStr(tData set);								// Conversion SET -> STR
+tData strToSetToken(str s, char token);
 
 #endif

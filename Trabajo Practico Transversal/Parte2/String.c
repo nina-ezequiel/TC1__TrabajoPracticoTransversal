@@ -127,7 +127,8 @@ str beforeToken(str s, char token) {
 		str nvo = crearNodo(temp->car);
 		if (ini == NULL) {
 			ini = ult = nvo;
-		} else {
+		} 
+		else {
 			ult->next = nvo;
 			ult = nvo;
 		}
@@ -150,20 +151,7 @@ str afterToken(str s, char token) {
 	if (temp == NULL || temp->next == NULL) {
 		return NULL;
 	}
-	str cop = temp->next;			
-	str ini = NULL;
-	str fin = NULL;
-	while (cop != NULL) {
-		str nvo = crearNodo(cop->car);
-		if (ini == NULL) {
-			ini = fin = nvo;
-		} else {
-			fin->next = nvo;
-			fin = nvo;
-		}
-		cop = cop->next;
-	}        
-	return ini;
+	return copyStr(temp->next);
 }
 	
 // Verifica si s2 está en s1

@@ -548,3 +548,23 @@ tData setToStr(tData set) {
 	resultado->str = resultadoStr;
 	return resultado;
 }
+
+// Convierte una cadena "elem1,elem2,elem3" en un conjunto (SET) de strings
+tData strToSetToken(str s, char token) {
+	tData set = newEmptyNodeSet();
+	if (set == NULL || s == NULL) 
+		return set;
+	str resto = copyStr(s);
+	while (resto != NULL) {
+		str before = beforeToken(resto, token);
+		if (before != NULL) {
+			tData elem = newNodeStrHard(before);
+			insert_set(&(set->data), elem);
+			freeStr(&before);
+		}
+		str nuevoResto = afterToken(resto, token);
+		freeStr(&resto);
+		resto = nuevoResto;
+	}
+	return set;
+}

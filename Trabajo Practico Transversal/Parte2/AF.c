@@ -2,26 +2,6 @@
 
 /* -------------------- Funciones auxiliares con TAD String ------------------- */
 
-// Convierte una cadena "elem1,elem2,elem3" en un conjunto (SET) de strings
-static tData splitToSet(str s, char delim) {
-	tData set = newEmptyNodeSet();
-	if (set == NULL || s == NULL) 
-		return set;
-	str resto = copyStr(s);
-	while (resto != NULL) {
-		str token = beforeToken(resto, delim);
-		if (token != NULL) {
-			tData elem = newNodeStrHard(token);
-			insert_set(&(set->data), elem);
-			freeStr(&token);
-		}
-		str nuevoResto = afterToken(resto, delim);
-		freeStr(&resto);
-		resto = nuevoResto;
-	}
-	return set;
-}
-
 // Parsea una transicion en formato "origen,simb,destino" o "origen,simb,{dest1,dest2}"
 // Retorna una DeltaEntry. En caso de error, los campos quedan NULL.
 static DeltaEntry parseDeltaEntry(str s) {
@@ -56,7 +36,7 @@ static DeltaEntry parseDeltaEntry(str s) {
 		free_tData(entry.symbol);
 		return entry;
 	}
-	tData destSet = splitToSet(destPart,',');
+	tData destSet = strToSetToken(destPart,',');
 	entry.destinations = destSet;
 	freeStr(&destPart);
 	return entry;
@@ -144,7 +124,7 @@ Af createAFinteractive() {
 	while (1) {
 		printf("\nAhora ingrese el/los estado/s final/es (separados por comas): ");
 		str fStr = loadStr();
-		tData Fset = splitToSet(fStr, ',');
+		tData Fset = strToSetToken(fStr, ',');
 		freeStr(&fStr);
 		if (inclusionSet(Fset, af->Q)) {
 			free_tData(af->F);

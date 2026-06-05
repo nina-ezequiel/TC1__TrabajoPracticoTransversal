@@ -2,7 +2,7 @@
 
 /* -------------------- Funciones auxiliares con TAD String ------------------- */
 
-// Parsea una transicion en formato "origen,simb,destino" o "origen,simb,{dest1,dest2}"
+// Parsea una transicion en formato "origen,simb,destino" o "origen,simb,dest1,dest2,...,dest_n"
 // Retorna una DeltaEntry. En caso de error, los campos quedan NULL.
 static DeltaEntry parseDeltaEntry(str s) {
 	DeltaEntry entry = {NULL, NULL, NULL};

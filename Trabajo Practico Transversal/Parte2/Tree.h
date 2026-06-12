@@ -51,4 +51,10 @@ tData strToSet(tData str);								// Conversion STR -> SETtData setToStr(tData s
 tData setToStr(tData set);								// Conversion SET -> STR
 tData strToSetToken(str s, char token);
 
+int tData_getType(tData d);               				// obtiene nodeType
+str tData_getStr(tData d);                				// obtiene el string si es STR
+tData tData_getFirst(tData d);            				// primer elemento de LIST/SET
+tData tData_getNext(tData d);            				// siguiente elemento en la lista
+void tData_addToSet(tData set, tData elem); 			// agrega elem al conjunto set
+
 #endif

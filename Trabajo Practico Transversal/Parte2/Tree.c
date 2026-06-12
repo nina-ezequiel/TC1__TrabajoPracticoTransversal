@@ -568,3 +568,35 @@ tData strToSetToken(str s, char token) {
 	}
 	return set;
 }
+
+int tData_getType(tData d) {
+	if (d == NULL) 
+		return 0;
+	return d->nodeType;
+}
+
+str tData_getStr(tData d) {
+	if (d == NULL || d->nodeType != STR) 
+		return NULL;
+	return d->str;
+}
+
+tData tData_getFirst(tData d) {
+	if (d == NULL) 
+		return NULL;
+	if (d->nodeType == LIST || d->nodeType == SET)
+		return d->data;
+	return NULL;
+}
+
+tData tData_getNext(tData d) {
+	if (d == NULL) 
+		return NULL;
+	return d->next;
+}
+
+void tData_addToSet(tData set, tData elem) {
+	if (set == NULL || elem == NULL) 
+		return;
+	insert_set(&(set->data), elem);
+}

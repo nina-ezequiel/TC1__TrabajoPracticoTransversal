@@ -1,8 +1,8 @@
 #include "AF.h"
 
-void ejemploAFD1(); // cantidad impar de ceros
-void ejemploAFD2(); // numero binaro divisible por 3
-void ejemploAFND1(); // penultima letra 'a'
+void ejemploAFD1();
+void ejemploAFD2();
+void ejemploAFND1();
 
 int main() {
 	int opcion;
@@ -19,7 +19,7 @@ int main() {
 		switch (opcion) {
 		case 1: {
 			printf("\n========== AFD ==========\n");
-			ejemploAFD2();
+			ejemploAFD1();
 			break;
 		}
 		case 2: {
@@ -28,8 +28,6 @@ int main() {
 			break;
 		}
 		case 3: {
-			// ==================== Creación interactiva (solo mostrar) ====================
-			printf("\n--- Creacion interactiva del automata ---\n");
 			Af af3 = createAFinteractive();
 			if (af3) {
 				printAF(af3);
@@ -43,63 +41,52 @@ int main() {
 			printf("Saliendo...\n");
 			break;
 		default:
-			printf("Opción no valida. Intente de nuevo.\n");
+			printf("Opcion no valida. Intente de nuevo.\n");
 		}
 	} while (opcion != 4);
-	
 	return 0;
 }
 
-void ejemploAFD1(){
-	
+void ejemploAFD1() {
 	Af afd = newEmptyAF();
 	
-	// Estados
-	tData q0 = newNodeStrHard(loadStr2("q0"));
-	tData q1 = newNodeStrHard(loadStr2("q1"));
-	insert_set(&(afd->Q->data), q0);
-	insert_set(&(afd->Q->data), q1);
+	// Crear estados y símbolos (como tData)
+	State q0 = newNodeStrHard(loadStr2("q0"));
+	State q1 = newNodeStrHard(loadStr2("q1"));
+	Symbol sym0 = newNodeStrHard(loadStr2("0"));
+	Symbol sym1 = newNodeStrHard(loadStr2("1"));
 	
-	// Alfabeto
-	tData sym0 = newNodeStrHard(loadStr2("0"));
-	tData sym1 = newNodeStrHard(loadStr2("1"));
-	insert_set(&(afd->Sigma->data), sym0);
-	insert_set(&(afd->Sigma->data), sym1);
+	// Agregar usando funciones de encapsulamiento (deben existir en AF.h)
+	addState(afd, q0);
+	addState(afd, q1);
+	addSymbol(afd, sym0);
+	addSymbol(afd, sym1);
+	setInitial(afd, q0);
+	addFinal(afd, q1);
 	
-	// Inicial
-	afd->q0 = copy_tData(q0);
+	// Construir conjuntos destino unitarios
+	tData dest_q0 = newEmptyNodeSet();
+	tData_addToSet(dest_q0, copy_tData(q0));
+	tData dest_q1 = newEmptyNodeSet();
+	tData_addToSet(dest_q1, copy_tData(q1));
 	
-	// Final
-	insert_set(&(afd->F->data), copy_tData(q1));
+	// Agregar transiciones
+	addTransition(afd, q0, sym0, dest_q1);
+	addTransition(afd, q0, sym1, dest_q0);
+	addTransition(afd, q1, sym0, dest_q0);
+	addTransition(afd, q1, sym1, dest_q1);
 	
-	// Transiciones
-	DeltaEntry d1, d2, d3, d4;
-	d1.from = copy_tData(q0);
-	d1.symbol = copy_tData(sym0);
-	d1.destinations = newEmptyNodeSet();
-	insert_set(&(d1.destinations->data), copy_tData(q1));
-	
-	d2.from = copy_tData(q0); d2.symbol = copy_tData(sym1);
-	d2.destinations = newEmptyNodeSet();
-	insert_set(&(d2.destinations->data), copy_tData(q0));
-	
-	d3.from = copy_tData(q1); d3.symbol = copy_tData(sym0);
-	d3.destinations = newEmptyNodeSet();
-	insert_set(&(d3.destinations->data), copy_tData(q0));
-	
-	d4.from = copy_tData(q1); d4.symbol = copy_tData(sym1);
-	d4.destinations = newEmptyNodeSet();
-	insert_set(&(d4.destinations->data), copy_tData(q1));
-	
-	afd->delta = malloc(4 * sizeof(DeltaEntry));
-	afd->delta[0] = d1; 
-	afd->delta[1] = d2;
-	afd->delta[2] = d3;
-	afd->delta[3] = d4;
-	afd->deltaCount = 4;
+	// Liberar conjuntos temporales (addTransition ya copió los destinos)
+	free_tData(dest_q0);
+	free_tData(dest_q1);
+	// Liberar los originales de estados y símbolos (ya se copiaron dentro del autómata)
+	free_tData(q0);
+	free_tData(q1);
+	free_tData(sym0);
+	free_tData(sym1);
 	
 	printAF(afd);
-	printf("\n--- Pruebas de aceptacion ---\n");
+	printf("\n--- Pruebas de aceptacion (Cantidad Impar de Ceros) ---\n");
 	printf("\"\"      : %s\n", acceptHardcoded(afd, "") ? "Aceptada" : "Rechazada");
 	printf("\"0\"     : %s\n", acceptHardcoded(afd, "0") ? "Aceptada" : "Rechazada");
 	printf("\"00\"    : %s\n", acceptHardcoded(afd, "00") ? "Aceptada" : "Rechazada");
@@ -110,74 +97,45 @@ void ejemploAFD1(){
 	freeAF(afd);
 }
 
-void ejemploAFD2(){
-	
+void ejemploAFD2() {
 	Af afd = newEmptyAF();
 	
-	// Estados
-	tData q0 = newNodeStrHard(loadStr2("q0"));
-	tData q1 = newNodeStrHard(loadStr2("q1"));
-	tData q2 = newNodeStrHard(loadStr2("q2"));
-	insert_set(&(afd->Q->data), q0);
-	insert_set(&(afd->Q->data), q1);
-	insert_set(&(afd->Q->data), q2);
+	State q0 = newNodeStrHard(loadStr2("q0"));
+	State q1 = newNodeStrHard(loadStr2("q1"));
+	State q2 = newNodeStrHard(loadStr2("q2"));
+	Symbol sym0 = newNodeStrHard(loadStr2("0"));
+	Symbol sym1 = newNodeStrHard(loadStr2("1"));
 	
-	// Alfabeto
-	tData sym0 = newNodeStrHard(loadStr2("0"));
-	tData sym1 = newNodeStrHard(loadStr2("1"));
-	insert_set(&(afd->Sigma->data), sym0);
-	insert_set(&(afd->Sigma->data), sym1);
+	addState(afd, q0);
+	addState(afd, q1);
+	addState(afd, q2);
+	addSymbol(afd, sym0);
+	addSymbol(afd, sym1);
+	setInitial(afd, q0);
+	addFinal(afd, q0);   // q0 es final
 	
-	// Inicial
-	afd->q0 = copy_tData(q0);
+	tData dest_q0 = newEmptyNodeSet(); tData_addToSet(dest_q0, copy_tData(q0));
+	tData dest_q1 = newEmptyNodeSet(); tData_addToSet(dest_q1, copy_tData(q1));
+	tData dest_q2 = newEmptyNodeSet(); tData_addToSet(dest_q2, copy_tData(q2));
 	
-	// Final
-	insert_set(&(afd->F->data), copy_tData(q0));
+	addTransition(afd, q0, sym0, dest_q0);
+	addTransition(afd, q0, sym1, dest_q1);
+	addTransition(afd, q1, sym0, dest_q2);
+	addTransition(afd, q1, sym1, dest_q0);
+	addTransition(afd, q2, sym0, dest_q1);
+	addTransition(afd, q2, sym1, dest_q2);
 	
-	// Transiciones
-	DeltaEntry d1, d2, d3, d4, d5, d6;
-	
-	d1.from = copy_tData(q0); 
-	d1.symbol = copy_tData(sym0);
-	d1.destinations = newEmptyNodeSet();
-	insert_set(&(d1.destinations->data), copy_tData(q0));
-	
-	d2.from = copy_tData(q0); 
-	d2.symbol = copy_tData(sym1);
-	d2.destinations = newEmptyNodeSet();
-	insert_set(&(d2.destinations->data), copy_tData(q1));
-	
-	d3.from = copy_tData(q1); 
-	d3.symbol = copy_tData(sym0);
-	d3.destinations = newEmptyNodeSet();
-	insert_set(&(d3.destinations->data), copy_tData(q2));
-	
-	d4.from = copy_tData(q1); 
-	d4.symbol = copy_tData(sym1);
-	d4.destinations = newEmptyNodeSet();
-	insert_set(&(d4.destinations->data), copy_tData(q0));
-	
-	d5.from = copy_tData(q2); 
-	d5.symbol = copy_tData(sym0);
-	d5.destinations = newEmptyNodeSet();
-	insert_set(&(d5.destinations->data), copy_tData(q1));
-	
-	d6.from = copy_tData(q2); 
-	d6.symbol = copy_tData(sym1);
-	d6.destinations = newEmptyNodeSet();
-	insert_set(&(d6.destinations->data), copy_tData(q2));
-	
-	afd->delta = malloc(6 * sizeof(DeltaEntry));
-	afd->delta[0] = d1; 
-	afd->delta[1] = d2;
-	afd->delta[2] = d3;
-	afd->delta[3] = d4;
-	afd->delta[4] = d5;
-	afd->delta[5] = d6;
-	afd->deltaCount = 6;
+	free_tData(dest_q0);
+	free_tData(dest_q1);
+	free_tData(dest_q2);
+	free_tData(q0);
+	free_tData(q1);
+	free_tData(q2);
+	free_tData(sym0);
+	free_tData(sym1);
 	
 	printAF(afd);
-	printf("\n--- Pruebas de aceptacion ---\n");
+	printf("\n--- Pruebas de aceptacion (Numero Binario Divisible por 3)---\n");
 	printf("\"10\"      : %s\n", acceptHardcoded(afd, "10") ? "Aceptada" : "Rechazada");
 	printf("\"111\"     : %s\n", acceptHardcoded(afd, "111") ? "Aceptada" : "Rechazada");
 	printf("\"1000\"    : %s\n", acceptHardcoded(afd, "1000") ? "Aceptada" : "Rechazada");
@@ -186,64 +144,49 @@ void ejemploAFD2(){
 	printf("\"10010\" : %s\n", acceptHardcoded(afd, "10010") ? "Aceptada" : "Rechazada");
 	
 	freeAF(afd);
-	
 }
-	
-void ejemploAFND1(){
-	
+
+void ejemploAFND1() {
 	Af afnd = newEmptyAF();
 	
-	tData q0 = newNodeStrHard(loadStr2("q0"));
-	tData q1 = newNodeStrHard(loadStr2("q1"));
-	tData q2 = newNodeStrHard(loadStr2("q2"));
-	insert_set(&(afnd->Q->data), q0);
-	insert_set(&(afnd->Q->data), q1);
-	insert_set(&(afnd->Q->data), q2);
+	State q0 = newNodeStrHard(loadStr2("q0"));
+	State q1 = newNodeStrHard(loadStr2("q1"));
+	State q2 = newNodeStrHard(loadStr2("q2"));
+	Symbol sym_a = newNodeStrHard(loadStr2("a"));
+	Symbol sym_b = newNodeStrHard(loadStr2("b"));
 	
-	tData sym_a = newNodeStrHard(loadStr2("a"));
-	tData sym_b = newNodeStrHard(loadStr2("b"));
-	insert_set(&(afnd->Sigma->data), sym_a);
-	insert_set(&(afnd->Sigma->data), sym_b);
+	addState(afnd, q0);
+	addState(afnd, q1);
+	addState(afnd, q2);
+	addSymbol(afnd, sym_a);
+	addSymbol(afnd, sym_b);
+	setInitial(afnd, q0);
+	addFinal(afnd, q2);
 	
-	afnd->q0 = copy_tData(q0);
-	insert_set(&(afnd->F->data), copy_tData(q2));
+	// Conjuntos destino
+	tData dest_q0 = newEmptyNodeSet(); tData_addToSet(dest_q0, copy_tData(q0));
+	tData dest_q1 = newEmptyNodeSet(); tData_addToSet(dest_q1, copy_tData(q1));
+	tData dest_q2 = newEmptyNodeSet(); tData_addToSet(dest_q2, copy_tData(q2));
+	tData dest_q0_q1 = newEmptyNodeSet();
+	tData_addToSet(dest_q0_q1, copy_tData(q0));
+	tData_addToSet(dest_q0_q1, copy_tData(q1));
 	
-	// Transiciones
-	DeltaEntry t1, t2, t3, t4, t5, t6;
-	t1.from = copy_tData(q0); 
-	t1.symbol = copy_tData(sym_a);
-	t1.destinations = newEmptyNodeSet();
-	insert_set(&(t1.destinations->data), copy_tData(q0));
-	insert_set(&(t1.destinations->data), copy_tData(q1));
+	addTransition(afnd, q0, sym_a, dest_q0_q1);
+	addTransition(afnd, q0, sym_b, dest_q0);
+	addTransition(afnd, q1, sym_a, dest_q2);
+	addTransition(afnd, q1, sym_b, dest_q2);
+	addTransition(afnd, q2, sym_a, dest_q0);
+	addTransition(afnd, q2, sym_b, dest_q0);
 	
-	t2.from = copy_tData(q0); t2.symbol = copy_tData(sym_b);
-	t2.destinations = newEmptyNodeSet();
-	insert_set(&(t2.destinations->data), copy_tData(q0));
-	
-	t3.from = copy_tData(q1); t3.symbol = copy_tData(sym_a);
-	t3.destinations = newEmptyNodeSet();
-	insert_set(&(t3.destinations->data), copy_tData(q2));
-	
-	t4.from = copy_tData(q1); t4.symbol = copy_tData(sym_b);
-	t4.destinations = newEmptyNodeSet();
-	insert_set(&(t4.destinations->data), copy_tData(q2));
-	
-	t5.from = copy_tData(q2); t5.symbol = copy_tData(sym_a);
-	t5.destinations = newEmptyNodeSet();
-	insert_set(&(t5.destinations->data), copy_tData(q0));
-	
-	t6.from = copy_tData(q2); t6.symbol = copy_tData(sym_b);
-	t6.destinations = newEmptyNodeSet();
-	insert_set(&(t6.destinations->data), copy_tData(q0));
-	
-	afnd->delta = malloc(6 * sizeof(DeltaEntry));
-	afnd->delta[0] = t1; 
-	afnd->delta[1] = t2;
-	afnd->delta[2] = t3;
-	afnd->delta[3] = t4;
-	afnd->delta[4] = t5; 
-	afnd->delta[5] = t6;
-	afnd->deltaCount = 6;
+	free_tData(dest_q0);
+	free_tData(dest_q1);
+	free_tData(dest_q2);
+	free_tData(dest_q0_q1);
+	free_tData(q0);
+	free_tData(q1);
+	free_tData(q2);
+	free_tData(sym_a);
+	free_tData(sym_b);
 	
 	printAF(afnd);
 	printf("\n--- Pruebas AFND (penultima letra = 'a') ---\n");
@@ -258,5 +201,3 @@ void ejemploAFND1(){
 	
 	freeAF(afnd);
 }
-	
-	

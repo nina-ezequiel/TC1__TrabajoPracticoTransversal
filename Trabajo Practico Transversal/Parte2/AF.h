@@ -4,12 +4,12 @@
 #include "Tree.h"
 
 typedef tData State;   // Estado = STR (ej: "q0")
-typedef tData Symbol;  // Símbolo = STR de un carácter (ej: "0")
+typedef tData Symbol;  // Símbolo = STR de un caracter (ej: "0")
 
-// Entrada de la función de transición d
+// Entrada de la funcion de transicion d
 typedef struct {
 	State from;           // estado origen
-	Symbol symbol;        // símbolo leído
+	Symbol symbol;        // símbolo leido
 	tData destinations;   // conjunto (SET) de estados destino
 } DeltaEntry;
 
@@ -18,14 +18,14 @@ typedef struct {
 	tData Q;              // conjunto de estados (SET)
 	tData Sigma;          // alfabeto (SET)
 	DeltaEntry* delta;    // arreglo dinamico de transiciones
-	int deltaCount;       // número de transiciones
+	int deltaCount;       // numero de transiciones
 	State q0;             // estado inicial
 	tData F;              // conjunto de estados finales (SET)
 } Automata;
 
 typedef Automata* Af;
 
-// Creación y destrucción
+// Creacion y destruccion
 Af newEmptyAF(void);
 Af createAFinteractive(void);
 void freeAF(Af af);
@@ -46,5 +46,12 @@ int acceptFromConsole(const Af af);
 
 // Utilidad
 void printAF(const Af af);
+
+// Funciones de modificacion
+void addState(Af af, State s);
+void addSymbol(Af af, Symbol s);
+void setInitial(Af af, State s);
+void addFinal(Af af, State s);
+void addTransition(Af af, State from, Symbol sym, tData dests);
 
 #endif

@@ -1,21 +1,25 @@
 #include "AF.h"
 #include "AF_Operations.h"
+#include "AF_Converter.h"
 
 void ejemploAFD1();
 void ejemploAFD2();
 void ejemploAFND1();
+void ejemploAFND2(); 
 
 int main() {
 	int opcion;
 	do {
 		printf("\n========== MENU ==========\n");
-		printf("1. Probar AFD\n");
-		printf("2. Probar AFND\n");
+		printf("1. Probar AFD (cantidad impar de ceros)\n");
+		printf("2. Probar AFND (penultima letra 'a')\n");
 		printf("3. Crear automata interactivamente y mostrarlo (sin probar cadenas)\n");
-		printf("4. Salir\n");
+		printf("4. Convertir AFND -> AFD (ejemplo penultima letra 'a')\n");
+		printf("5. Convertir AFND -> AFD (ejemplo del tp)\n");
+		printf("6. Salir\n");
 		printf("Elija una opcion: ");
 		scanf("%d", &opcion);
-		limpiarBuffer(); // limpiar el salto de línea
+		limpiarBuffer();
 		
 		switch (opcion) {
 		case 1: {
@@ -38,26 +42,80 @@ int main() {
 			}
 			break;
 		}
-		case 4:
+		case 4: {
+			printf("\n=== Conversion AFND -> AFD (ejemplo penultima letra 'a') ===\n");
+			// Construir el AFND de penultima letra 'a'
+			Af afnd = newEmptyAF();
+			
+			State q0 = newNodeStrHard(loadStr2("q0"));
+			State q1 = newNodeStrHard(loadStr2("q1"));
+			State q2 = newNodeStrHard(loadStr2("q2"));
+			Symbol sym_a = newNodeStrHard(loadStr2("a"));
+			Symbol sym_b = newNodeStrHard(loadStr2("b"));
+			
+			AF_addState(afnd, q0);
+			AF_addState(afnd, q1);
+			AF_addState(afnd, q2);
+			AF_addSymbol(afnd, sym_a);
+			AF_addSymbol(afnd, sym_b);
+			AF_setInitial(afnd, q0);
+			AF_addFinal(afnd, q2);
+			
+			tData dest_q0 = newEmptyNodeSet(); tData_addToSet(dest_q0, copy_tData(q0));
+			tData dest_q1 = newEmptyNodeSet(); tData_addToSet(dest_q1, copy_tData(q1));
+			tData dest_q2 = newEmptyNodeSet(); tData_addToSet(dest_q2, copy_tData(q2));
+			tData dest_q0_q1 = newEmptyNodeSet();
+			tData_addToSet(dest_q0_q1, copy_tData(q0));
+			tData_addToSet(dest_q0_q1, copy_tData(q1));
+			
+			AF_addTransition(afnd, q0, sym_a, dest_q0_q1);
+			AF_addTransition(afnd, q0, sym_b, dest_q0);
+			AF_addTransition(afnd, q1, sym_a, dest_q2);
+			AF_addTransition(afnd, q1, sym_b, dest_q2);
+			AF_addTransition(afnd, q2, sym_a, dest_q0);
+			AF_addTransition(afnd, q2, sym_b, dest_q0);
+			
+			free_tData(dest_q0); free_tData(dest_q1); free_tData(dest_q2); free_tData(dest_q0_q1);
+			free_tData(q0); free_tData(q1); free_tData(q2); free_tData(sym_a); free_tData(sym_b);
+			
+			printf("\n--- AFND original ---\n");
+			printAF(afnd);
+			
+			Af afd = AFNDtoAFD(afnd);
+			if (afd) {
+				printf("\n--- AFD convertido (renombrado) ---\n");
+				printAF(afd);
+				freeAF(afd);
+			} else {
+				printf("Error en la conversion.\n");
+			}
+			freeAF(afnd);
+			break;
+		}
+		case 5: {
+			printf("\n=== Conversion AFND -> AFD (nuevo ejemplo con 6 estados) ===\n");
+			ejemploAFND2();
+			break;
+		}
+		case 6:
 			printf("Saliendo...\n");
 			break;
 		default:
 			printf("Opcion no valida. Intente de nuevo.\n");
 		}
-	} while (opcion != 4);
+	} while (opcion != 6);
 	return 0;
 }
 
+/* ==================== Ejemplo AFD (cantidad impar de ceros) ==================== */
 void ejemploAFD1() {
 	Af afd = newEmptyAF();
 	
-	// Crear estados y símbolos (como tData)
 	State q0 = newNodeStrHard(loadStr2("q0"));
 	State q1 = newNodeStrHard(loadStr2("q1"));
 	Symbol sym0 = newNodeStrHard(loadStr2("0"));
 	Symbol sym1 = newNodeStrHard(loadStr2("1"));
 	
-	// Agregar usando funciones de encapsulamiento (deben existir en AF.h)
 	AF_addState(afd, q0);
 	AF_addState(afd, q1);
 	AF_addSymbol(afd, sym0);
@@ -65,26 +123,17 @@ void ejemploAFD1() {
 	AF_setInitial(afd, q0);
 	AF_addFinal(afd, q1);
 	
-	// Construir conjuntos destino unitarios
-	tData dest_q0 = newEmptyNodeSet();
-	tData_addToSet(dest_q0, copy_tData(q0));
-	tData dest_q1 = newEmptyNodeSet();
-	tData_addToSet(dest_q1, copy_tData(q1));
+	tData dest_q0 = newEmptyNodeSet(); tData_addToSet(dest_q0, copy_tData(q0));
+	tData dest_q1 = newEmptyNodeSet(); tData_addToSet(dest_q1, copy_tData(q1));
 	
-	// Agregar transiciones
 	AF_addTransition(afd, q0, sym0, dest_q1);
 	AF_addTransition(afd, q0, sym1, dest_q0);
 	AF_addTransition(afd, q1, sym0, dest_q0);
 	AF_addTransition(afd, q1, sym1, dest_q1);
 	
-	// Liberar conjuntos temporales (addTransition ya copió los destinos)
 	free_tData(dest_q0);
 	free_tData(dest_q1);
-	// Liberar los originales de estados y símbolos (ya se copiaron dentro del autómata)
-	free_tData(q0);
-	free_tData(q1);
-	free_tData(sym0);
-	free_tData(sym1);
+	free_tData(q0); free_tData(q1); free_tData(sym0); free_tData(sym1);
 	
 	printAF(afd);
 	printf("\n--- Pruebas de aceptacion (Cantidad Impar de Ceros) ---\n");
@@ -98,6 +147,7 @@ void ejemploAFD1() {
 	freeAF(afd);
 }
 
+/* ==================== Ejemplo AFD2 (divisible por 3) ==================== */
 void ejemploAFD2() {
 	Af afd = newEmptyAF();
 	
@@ -147,6 +197,7 @@ void ejemploAFD2() {
 	freeAF(afd);
 }
 
+/* ==================== Ejemplo AFND1 (penultima letra 'a') ==================== */
 void ejemploAFND1() {
 	Af afnd = newEmptyAF();
 	
@@ -164,7 +215,6 @@ void ejemploAFND1() {
 	AF_setInitial(afnd, q0);
 	AF_addFinal(afnd, q2);
 	
-	// Conjuntos destino
 	tData dest_q0 = newEmptyNodeSet(); tData_addToSet(dest_q0, copy_tData(q0));
 	tData dest_q1 = newEmptyNodeSet(); tData_addToSet(dest_q1, copy_tData(q1));
 	tData dest_q2 = newEmptyNodeSet(); tData_addToSet(dest_q2, copy_tData(q2));
@@ -179,15 +229,8 @@ void ejemploAFND1() {
 	AF_addTransition(afnd, q2, sym_a, dest_q0);
 	AF_addTransition(afnd, q2, sym_b, dest_q0);
 	
-	free_tData(dest_q0);
-	free_tData(dest_q1);
-	free_tData(dest_q2);
-	free_tData(dest_q0_q1);
-	free_tData(q0);
-	free_tData(q1);
-	free_tData(q2);
-	free_tData(sym_a);
-	free_tData(sym_b);
+	free_tData(dest_q0); free_tData(dest_q1); free_tData(dest_q2); free_tData(dest_q0_q1);
+	free_tData(q0); free_tData(q1); free_tData(q2); free_tData(sym_a); free_tData(sym_b);
 	
 	printAF(afnd);
 	printf("\n--- Pruebas AFND (penultima letra = 'a') ---\n");
@@ -200,5 +243,95 @@ void ejemploAFND1() {
 	printf("\"bb\"    : %s\n", acceptHardcoded(afnd, "bb") ? "Aceptada" : "Rechazada");
 	printf("\"aba\"   : %s\n", acceptHardcoded(afnd, "aba") ? "Aceptada" : "Rechazada");
 	
+	freeAF(afnd);
+}
+
+/* ==================== Nuevo AFND2 (6 estados) ==================== */
+void ejemploAFND2() {
+	// Estados: q0, q1, q2, q3, q4, q5 (q5 final)
+	// Alfabeto: 0, 1
+	// Transiciones:
+	//   (q0,0) = {q0}
+	//   (q0,1) = {q0,q1,q2}
+	//   (q1,0) = {q2,q3}
+	//   (q1,1) = {}
+	//   (q2,0) = {}
+	//   (q2,1) = {q4}
+	//   (q3,0) = {q5}
+	//   (q3,1) = {}
+	//   (q4,0) = {}
+	//   (q4,1) = {q5}
+	//   (q5,0) = {q5}
+	//   (q5,1) = {q5}
+	// Estado inicial: q0
+	// Estado final: q5
+	
+	Af afnd = newEmptyAF();
+	
+	State q0 = newNodeStrHard(loadStr2("q0"));
+	State q1 = newNodeStrHard(loadStr2("q1"));
+	State q2 = newNodeStrHard(loadStr2("q2"));
+	State q3 = newNodeStrHard(loadStr2("q3"));
+	State q4 = newNodeStrHard(loadStr2("q4"));
+	State q5 = newNodeStrHard(loadStr2("q5"));
+	
+	Symbol sym0 = newNodeStrHard(loadStr2("0"));
+	Symbol sym1 = newNodeStrHard(loadStr2("1"));
+	
+	AF_addState(afnd, q0);
+	AF_addState(afnd, q1);
+	AF_addState(afnd, q2);
+	AF_addState(afnd, q3);
+	AF_addState(afnd, q4);
+	AF_addState(afnd, q5);
+	AF_addSymbol(afnd, sym0);
+	AF_addSymbol(afnd, sym1);
+	AF_setInitial(afnd, q0);
+	AF_addFinal(afnd, q5);
+	
+	// Conjuntos destino
+	tData set_q0 = newEmptyNodeSet(); tData_addToSet(set_q0, copy_tData(q0));
+	tData set_q0_q1_q2 = newEmptyNodeSet();
+	tData_addToSet(set_q0_q1_q2, copy_tData(q0));
+	tData_addToSet(set_q0_q1_q2, copy_tData(q1));
+	tData_addToSet(set_q0_q1_q2, copy_tData(q2));
+	tData set_q2_q3 = newEmptyNodeSet();
+	tData_addToSet(set_q2_q3, copy_tData(q2));
+	tData_addToSet(set_q2_q3, copy_tData(q3));
+	tData set_q4 = newEmptyNodeSet(); tData_addToSet(set_q4, copy_tData(q4));
+	tData set_q5 = newEmptyNodeSet(); tData_addToSet(set_q5, copy_tData(q5));
+	tData set_vacio = newEmptyNodeSet();  // para transiciones vacías (no se agregan)
+	
+	// Agregar transiciones
+	AF_addTransition(afnd, q0, sym0, set_q0);               
+	AF_addTransition(afnd, q0, sym1, set_q0_q1_q2);         
+	AF_addTransition(afnd, q1, sym0, set_q2_q3);            
+	AF_addTransition(afnd, q2, sym1, set_q4);               
+	AF_addTransition(afnd, q3, sym0, set_q5);               
+	AF_addTransition(afnd, q4, sym1, set_q5);               
+	AF_addTransition(afnd, q5, sym0, set_q5);               
+	AF_addTransition(afnd, q5, sym1, set_q5);               
+	
+	// Liberar conjuntos temporales
+	free_tData(set_q0);
+	free_tData(set_q0_q1_q2);
+	free_tData(set_q2_q3);
+	free_tData(set_q4);
+	free_tData(set_q5);
+	free_tData(set_vacio);
+	free_tData(q0); free_tData(q1); free_tData(q2); free_tData(q3); free_tData(q4); free_tData(q5);
+	free_tData(sym0); free_tData(sym1);
+	
+	printf("\n--- AFND original (6 estados) ---\n");
+	printAF(afnd);
+	
+	Af afd = AFNDtoAFD(afnd);
+	if (afd) {
+		printf("\n--- AFD convertido (renombrado) ---\n");
+		printAF(afd);
+		freeAF(afd);
+	} else {
+		printf("Error en la conversion.\n");
+	}
 	freeAF(afnd);
 }

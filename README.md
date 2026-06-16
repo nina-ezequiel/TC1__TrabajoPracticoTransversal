@@ -4,5 +4,4 @@ Repositorio destinado para el Trabajo Practico Transversal de la materia Teoría
 
 # Miembros del Grupo:
 Grupo 9:
-  Maximiliano Ezequiel Parada Nina
-  Carlos Alejandro Moya 
+  Maximiliano Ezequiel Parada Nina - Carlos Alejandro Moya 

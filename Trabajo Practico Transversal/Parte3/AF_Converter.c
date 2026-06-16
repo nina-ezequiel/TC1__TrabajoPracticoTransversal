@@ -25,7 +25,7 @@ static str getStateName(int id) {
 }
 
 /* ------------------------------------------------------------
-* Crea un AFD vacío y copia el alfabeto del AFND.
+* Crea un AFD vacio y copia el alfabeto del AFND.
 * ------------------------------------------------------------ */
 static Af crearAFDVacioConAlfabeto(const Af afnd) {
 	Af afd = newEmptyAF();
@@ -81,8 +81,8 @@ static int obtenerOCrearIndice(Af afd, tData destSet, tData** subConjuntos, tDat
 }
 
 /* ------------------------------------------------------------
-* Agrega una transición al AFD desde currentState con símbolo sigmaNode
-* hacia el estado con índice destIdx.
+* Agrega una transicion al AFD desde currentState con simbolo sigmaNode
+* hacia el estado con indice destIdx.
 * ------------------------------------------------------------ */
 static void agregarTransicionAFD(Af afd, tData currentState, tData sigmaNode, int destIdx, tData* estadosAFD) {
    tData unit = newEmptyNodeSet();
@@ -115,7 +115,7 @@ static void liberarArreglos(tData* subConjuntos, tData* estadosAFD, int numConju
 }
  
 /* ============================================================
-* FUNCIÓN PÚBLICA: computeNextSet
+* FUNCION PUBLICA: computeNextSet
 * ============================================================ */
 tData computeNextSet(const Af af, tData currentStates, Symbol sym) {
 	tData nextSet = newEmptyNodeSet();
@@ -139,7 +139,7 @@ tData computeNextSet(const Af af, tData currentStates, Symbol sym) {
 }
  
 /* ============================================================
-* FUNCIÓN PRINCIPAL: AFNDtoAFD
+* FUNCION PRINCIPAL: AFNDtoAFD
 * ============================================================ */
 Af AFNDtoAFD(const Af afnd) {
 	if (afnd == NULL) return NULL;
@@ -157,7 +157,6 @@ Af AFNDtoAFD(const Af afnd) {
 		tData currentState = estadosAFD[i];
 		tData sigmaNode = tData_getFirst(getAlphabet(afnd));
 		while (sigmaNode) {
-			// Usamos la función pública computeNextSet (definida arriba)
 			tData destSet = computeNextSet(afnd, currentSet, sigmaNode);
 			if (destSet != NULL) {
 				int idx = obtenerOCrearIndice(afd, destSet, &subConjuntos, &estadosAFD, &numConjuntos);

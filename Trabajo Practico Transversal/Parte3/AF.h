@@ -37,6 +37,7 @@ State getInitial(const Af af);
 tData getFinals(const Af af);
 const DeltaEntry* getDelta(const Af af);
 int getDeltaCount(const Af af);
+tData getDestinations(const Af af, State from, Symbol sym);
 
 // Propiedades y reconocimiento
 int isDeterministic(const Af af);

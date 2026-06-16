@@ -1,5 +1,6 @@
 #include "AF.h"
 #include "AF_Operations.h"
+#include "AF_Converter.h"
 
 /* -------------------- Creacion y destruccion ------------------- */
 
@@ -123,7 +124,7 @@ int isDeterministic(const Af af) {
 }
 
 /* -------------------- Aceptacion de cadenas ------------------- */
-static tData getDestinations(const Af af, State from, Symbol sym) {
+tData getDestinations(const Af af, State from, Symbol sym) {
 	for (int i = 0; i < af->deltaCount; i++) {
 		if (equal_tData(af->delta[i].from, from) && equal_tData(af->delta[i].symbol, sym))
 			return af->delta[i].destinations;
@@ -142,19 +143,7 @@ static int acceptRecursive(const Af af, tData currentStates, str input) {
 	}
 	char symBuf[2] = {input->car, '\0'};
 	Symbol sym = newNodeStrHard(loadStr2(symBuf));
-	tData nextSet = newEmptyNodeSet();
-	tData stateNode = tData_getFirst(currentStates);
-	while (stateNode) {
-		tData destSet = getDestinations(af, stateNode, sym);
-		if (destSet != NULL) {
-			tData dest = tData_getFirst(destSet);
-			while (dest) {
-				tData_addToSet(nextSet, copy_tData(dest));
-				dest = tData_getNext(dest);
-			}
-		}
-		stateNode = tData_getNext(stateNode);
-	}
+	tData nextSet = computeNextSet(af, currentStates, sym);
 	free_tData(sym);
 	int result = acceptRecursive(af, nextSet, input->next);
 	free_tData(nextSet);

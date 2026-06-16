@@ -43,8 +43,7 @@ DeltaEntry parseDeltaEntry(str s) {
 void addTransition(DeltaEntry** delta, int* deltaCount, DeltaEntry newEntry) {
 	// Buscar si ya existe una transicion con el mismo origen y simbolo
 	for (int i = 0; i < *deltaCount; i++) {
-		if (equal_tData((*delta)[i].from, newEntry.from) &&
-			equal_tData((*delta)[i].symbol, newEntry.symbol)) {
+		if (equal_tData((*delta)[i].from, newEntry.from) && equal_tData((*delta)[i].symbol, newEntry.symbol)) {
 			// Fusionar destinos
 			tData destExistentes = (*delta)[i].destinations;
 			tData destNode = tData_getFirst(newEntry.destinations);

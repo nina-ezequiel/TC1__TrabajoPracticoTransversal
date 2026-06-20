@@ -2,18 +2,19 @@
 #include "AF_Operations.h"
 #include "AF_Converter.h"
 
-void ejemploAFD1();
-void ejemploAFD2();
-void ejemploAFND1();
-void ejemploAFND2(); 
+void ejemploAFD1();                     // AFD que reconoce cantidad impar de ceros
+void ejemploAFD2();                     // AFD que reconoce numeros binarios divisibles por 3
+void ejemploAFND1();                    // AFND para penultima letra 'a' (solo muestra y prueba)
+void ejemploConversionPenultimaA();     // Construye AFND penultima 'a' y lo convierte a AFD
+void ejemploConversionAFND2();          // Construye AFND de 6 estados (ejemplo TP) y lo convierte a AFD
 
 int main() {
 	int opcion;
 	do {
 		printf("\n========== MENU ==========\n");
-		printf("1. Probar AFD (cantidad impar de ceros)\n");
-		printf("2. Probar AFND (penultima letra 'a')\n");
-		printf("3. Crear automata interactivamente y mostrarlo (sin probar cadenas)\n");
+		printf("1. Probar AFD\n");
+		printf("2. Probar AFND\n");
+		printf("3. Crear automata interactivamente y mostrarlo\n");
 		printf("4. Convertir AFND -> AFD (ejemplo penultima letra 'a')\n");
 		printf("5. Convertir AFND -> AFD (ejemplo del tp)\n");
 		printf("6. Salir\n");
@@ -44,57 +45,12 @@ int main() {
 		}
 		case 4: {
 			printf("\n=== Conversion AFND -> AFD (ejemplo penultima letra 'a') ===\n");
-			// Construir el AFND de penultima letra 'a'
-			Af afnd = newEmptyAF();
-			
-			State q0 = newNodeStrHard(loadStr2("q0"));
-			State q1 = newNodeStrHard(loadStr2("q1"));
-			State q2 = newNodeStrHard(loadStr2("q2"));
-			Symbol sym_a = newNodeStrHard(loadStr2("a"));
-			Symbol sym_b = newNodeStrHard(loadStr2("b"));
-			
-			AF_addState(afnd, q0);
-			AF_addState(afnd, q1);
-			AF_addState(afnd, q2);
-			AF_addSymbol(afnd, sym_a);
-			AF_addSymbol(afnd, sym_b);
-			AF_setInitial(afnd, q0);
-			AF_addFinal(afnd, q2);
-			
-			tData dest_q0 = newEmptyNodeSet(); tData_addToSet(dest_q0, copy_tData(q0));
-			tData dest_q1 = newEmptyNodeSet(); tData_addToSet(dest_q1, copy_tData(q1));
-			tData dest_q2 = newEmptyNodeSet(); tData_addToSet(dest_q2, copy_tData(q2));
-			tData dest_q0_q1 = newEmptyNodeSet();
-			tData_addToSet(dest_q0_q1, copy_tData(q0));
-			tData_addToSet(dest_q0_q1, copy_tData(q1));
-			
-			AF_addTransition(afnd, q0, sym_a, dest_q0_q1);
-			AF_addTransition(afnd, q0, sym_b, dest_q0);
-			AF_addTransition(afnd, q1, sym_a, dest_q2);
-			AF_addTransition(afnd, q1, sym_b, dest_q2);
-			AF_addTransition(afnd, q2, sym_a, dest_q0);
-			AF_addTransition(afnd, q2, sym_b, dest_q0);
-			
-			free_tData(dest_q0); free_tData(dest_q1); free_tData(dest_q2); free_tData(dest_q0_q1);
-			free_tData(q0); free_tData(q1); free_tData(q2); free_tData(sym_a); free_tData(sym_b);
-			
-			printf("\n--- AFND original ---\n");
-			printAF(afnd);
-			
-			Af afd = AFNDtoAFD(afnd);
-			if (afd) {
-				printf("\n--- AFD convertido (renombrado) ---\n");
-				printAF(afd);
-				freeAF(afd);
-			} else {
-				printf("Error en la conversion.\n");
-			}
-			freeAF(afnd);
+			ejemploConversionPenultimaA();
 			break;
 		}
 		case 5: {
 			printf("\n=== Conversion AFND -> AFD (nuevo ejemplo con 6 estados) ===\n");
-			ejemploAFND2();
+			ejemploConversionAFND2();
 			break;
 		}
 		case 6:
@@ -246,8 +202,58 @@ void ejemploAFND1() {
 	freeAF(afnd);
 }
 
-/* ==================== Nuevo AFND2 (6 estados) ==================== */
-void ejemploAFND2() {
+/* ==================== Conversión: AFND penúltima 'a' -> AFD ==================== */
+void ejemploConversionPenultimaA() {
+	// Construir el AFND de penultima letra 'a'
+	Af afnd = newEmptyAF();
+	
+	State q0 = newNodeStrHard(loadStr2("q0"));
+	State q1 = newNodeStrHard(loadStr2("q1"));
+	State q2 = newNodeStrHard(loadStr2("q2"));
+	Symbol sym_a = newNodeStrHard(loadStr2("a"));
+	Symbol sym_b = newNodeStrHard(loadStr2("b"));
+	
+	AF_addState(afnd, q0);
+	AF_addState(afnd, q1);
+	AF_addState(afnd, q2);
+	AF_addSymbol(afnd, sym_a);
+	AF_addSymbol(afnd, sym_b);
+	AF_setInitial(afnd, q0);
+	AF_addFinal(afnd, q2);
+	
+	tData dest_q0 = newEmptyNodeSet(); tData_addToSet(dest_q0, copy_tData(q0));
+	tData dest_q1 = newEmptyNodeSet(); tData_addToSet(dest_q1, copy_tData(q1));
+	tData dest_q2 = newEmptyNodeSet(); tData_addToSet(dest_q2, copy_tData(q2));
+	tData dest_q0_q1 = newEmptyNodeSet();
+	tData_addToSet(dest_q0_q1, copy_tData(q0));
+	tData_addToSet(dest_q0_q1, copy_tData(q1));
+	
+	AF_addTransition(afnd, q0, sym_a, dest_q0_q1);
+	AF_addTransition(afnd, q0, sym_b, dest_q0);
+	AF_addTransition(afnd, q1, sym_a, dest_q2);
+	AF_addTransition(afnd, q1, sym_b, dest_q2);
+	AF_addTransition(afnd, q2, sym_a, dest_q0);
+	AF_addTransition(afnd, q2, sym_b, dest_q0);
+	
+	free_tData(dest_q0); free_tData(dest_q1); free_tData(dest_q2); free_tData(dest_q0_q1);
+	free_tData(q0); free_tData(q1); free_tData(q2); free_tData(sym_a); free_tData(sym_b);
+	
+	printf("\n--- AFND original ---\n");
+	printAF(afnd);
+	
+	Af afd = AFNDtoAFD(afnd);
+	if (afd) {
+		printf("\n--- AFD convertido (renombrado) ---\n");
+		printAF(afd);
+		freeAF(afd);
+	} else {
+		printf("Error en la conversion.\n");
+	}
+	freeAF(afnd);
+}
+
+/* ==================== Conversión: AFND de 6 estados (ejemplo TP) -> AFD ==================== */
+void ejemploConversionAFND2() {
 	// Estados: q0, q1, q2, q3, q4, q5 (q5 final)
 	// Alfabeto: 0, 1
 	// Transiciones:

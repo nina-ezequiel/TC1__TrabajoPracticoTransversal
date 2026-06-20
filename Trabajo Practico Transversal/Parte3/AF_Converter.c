@@ -3,28 +3,6 @@
 #include <stdlib.h>
 
 /* ------------------------------------------------------------
-* Verifica si un subconjunto contiene al menos un estado final del AFND.
-* ------------------------------------------------------------ */
-static int containsFinal(tData subset, tData finalSet) {
-	tData it = tData_getFirst(subset);
-	while (it) {
-		if (pertainSet(it, finalSet))
-			return 1;
-		it = tData_getNext(it);
-	}
-	return 0;
-}
-
-/* ------------------------------------------------------------
-* Genera el nombre de un estado del AFD a partir de su ID (p0, p1, ...).
-* ------------------------------------------------------------ */
-static str getStateName(int id) {
-	char buf[10];
-	sprintf(buf, "p%d", id);
-	return loadStr2(buf);
-}
-
-/* ------------------------------------------------------------
 * Crea un AFD vacio y copia el alfabeto del AFND.
 * ------------------------------------------------------------ */
 static Af crearAFDVacioConAlfabeto(const Af afnd) {
@@ -36,6 +14,15 @@ static Af crearAFDVacioConAlfabeto(const Af afnd) {
 		sigmaNode = tData_getNext(sigmaNode);
 	}
 	return afd;
+}
+
+/* ------------------------------------------------------------
+* Genera el nombre de un estado del AFD a partir de su ID (p0, p1, ...).
+* ------------------------------------------------------------ */
+static str getStateName(int id) {
+	char buf[10];
+	sprintf(buf, "p%d", id);
+	return loadStr2(buf);
 }
 
 /* ------------------------------------------------------------
@@ -55,6 +42,30 @@ static void inicializarArreglos(Af afd, const Af afnd, tData** subConjuntos, tDa
 	AF_setInitial(afd, state0);
 	*estadosAFD = (tData*)realloc(*estadosAFD, sizeof(tData));
 	(*estadosAFD)[0] = state0;
+}
+
+/* ============================================================
+* FUNCION PUBLICA: computeNextSet
+* ============================================================ */
+tData computeNextSet(const Af af, tData currentStates, Symbol sym) {
+	tData nextSet = newEmptyNodeSet();
+	tData stateNode = tData_getFirst(currentStates);
+	while (stateNode) {
+		tData dests = getDestinations(af, stateNode, sym);
+		if (dests != NULL) {
+			tData dnode = tData_getFirst(dests);
+			while (dnode) {
+				tData_addToSet(nextSet, copy_tData(dnode));
+				dnode = tData_getNext(dnode);
+			}
+		}
+		stateNode = tData_getNext(stateNode);
+	}
+	if (tData_getFirst(nextSet) == NULL) {
+		free_tData(nextSet);
+		return NULL;
+	}
+	return nextSet;
 }
 
 /* ------------------------------------------------------------
@@ -85,10 +96,23 @@ static int obtenerOCrearIndice(Af afd, tData destSet, tData** subConjuntos, tDat
 * hacia el estado con indice destIdx.
 * ------------------------------------------------------------ */
 static void agregarTransicionAFD(Af afd, tData currentState, tData sigmaNode, int destIdx, tData* estadosAFD) {
-   tData unit = newEmptyNodeSet();
-   tData_addToSet(unit, copy_tData(estadosAFD[destIdx]));
-   AF_addTransition(afd, currentState, sigmaNode, unit);
-   free_tData(unit);
+	tData unit = newEmptyNodeSet();
+	tData_addToSet(unit, copy_tData(estadosAFD[destIdx]));
+	AF_addTransition(afd, currentState, sigmaNode, unit);
+	free_tData(unit);
+}
+
+/* ------------------------------------------------------------
+* Verifica si un subconjunto contiene al menos un estado final del AFND.
+* ------------------------------------------------------------ */
+static int containsFinal(tData subset, tData finalSet) {
+	tData it = tData_getFirst(subset);
+	while (it) {
+		if (pertainSet(it, finalSet))
+			return 1;
+		it = tData_getNext(it);
+	}
+	return 0;
 }
 
 /* ------------------------------------------------------------
@@ -102,42 +126,19 @@ static void marcarFinalesAFD(Af afd, const Af afnd, tData* subConjuntos, tData* 
 		}
 	}
 }
- 
- /* ------------------------------------------------------------
- * Libera la memoria de los arreglos auxiliares.
- * ------------------------------------------------------------ */
+
+/* ------------------------------------------------------------
+* Libera la memoria de los arreglos auxiliares.
+* ------------------------------------------------------------ */
 static void liberarArreglos(tData* subConjuntos, tData* estadosAFD, int numConjuntos) {
 	for (int i = 0; i < numConjuntos; i++) {
 		free_tData(subConjuntos[i]);
+		free_tData(estadosAFD[i]);
 	}
 	free(subConjuntos);
 	free(estadosAFD);
 }
- 
-/* ============================================================
-* FUNCION PUBLICA: computeNextSet
-* ============================================================ */
-tData computeNextSet(const Af af, tData currentStates, Symbol sym) {
-	tData nextSet = newEmptyNodeSet();
-	tData stateNode = tData_getFirst(currentStates);
-	while (stateNode) {
-		tData dests = getDestinations(af, stateNode, sym);
-		if (dests != NULL) {
-			tData dnode = tData_getFirst(dests);
-			while (dnode) {
-				tData_addToSet(nextSet, copy_tData(dnode));
-				dnode = tData_getNext(dnode);
-			}
-		}
-		stateNode = tData_getNext(stateNode);
-	}
-	if (tData_getFirst(nextSet) == NULL) {
-		free_tData(nextSet);
-		return NULL;
-	}
-	return nextSet;
-}
- 
+
 /* ============================================================
 * FUNCION PRINCIPAL: AFNDtoAFD
 * ============================================================ */

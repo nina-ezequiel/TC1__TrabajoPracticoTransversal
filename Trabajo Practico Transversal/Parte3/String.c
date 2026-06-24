@@ -200,3 +200,7 @@ void limpiarBuffer() {
 	int c;
 	while ((c = getchar()) != '\n' && c != EOF);
 }
+
+char str_getFirst(str s){
+	return s->car;
+}

@@ -45,27 +45,27 @@ static void inicializarArreglos(Af afd, const Af afnd, tData** subConjuntos, tDa
 }
 
 /* ============================================================
-* FUNCION PUBLICA: computeNextSet
+* FUNCION PUBLICA: computeStates
 * ============================================================ */
-tData computeNextSet(const Af af, tData currentStates, Symbol sym) {
-	tData nextSet = newEmptyNodeSet();
+tData computeStates(const Af af, tData currentStates, Symbol sym) {
+	tData possibleStates = newEmptyNodeSet();
 	tData stateNode = tData_getFirst(currentStates);
 	while (stateNode) {
 		tData dests = getDestinations(af, stateNode, sym);
 		if (dests != NULL) {
 			tData dnode = tData_getFirst(dests);
 			while (dnode) {
-				tData_addToSet(nextSet, copy_tData(dnode));
+				tData_addToSet(possibleStates, copy_tData(dnode));
 				dnode = tData_getNext(dnode);
 			}
 		}
 		stateNode = tData_getNext(stateNode);
 	}
-	if (tData_getFirst(nextSet) == NULL) {
-		free_tData(nextSet);
+	if (tData_getFirst(possibleStates) == NULL) {
+		free_tData(possibleStates);
 		return NULL;
 	}
-	return nextSet;
+	return possibleStates;
 }
 
 /* ------------------------------------------------------------
@@ -103,27 +103,17 @@ static void agregarTransicionAFD(Af afd, tData currentState, tData sigmaNode, in
 }
 
 /* ------------------------------------------------------------
-* Verifica si un subconjunto contiene al menos un estado final del AFND.
-* ------------------------------------------------------------ */
-static int containsFinal(tData subset, tData finalSet) {
-	tData it = tData_getFirst(subset);
-	while (it) {
-		if (pertainSet(it, finalSet))
-			return 1;
-		it = tData_getNext(it);
-	}
-	return 0;
-}
-
-/* ------------------------------------------------------------
 * Marca como finales los estados del AFD cuyo subconjunto asociado
 * contiene al menos un estado final del AFND.
+* Se usa intersectionSet para comprobar si la intersección no es vacía.
 * ------------------------------------------------------------ */
 static void marcarFinalesAFD(Af afd, const Af afnd, tData* subConjuntos, tData* estadosAFD, int numConjuntos) {
 	for (int i = 0; i < numConjuntos; i++) {
-		if (containsFinal(subConjuntos[i], getFinals(afnd))) {
+		tData inter = intersectionSet(subConjuntos[i], getFinals(afnd));
+		if (inter != NULL && tData_getFirst(inter) != NULL) {
 			AF_addFinal(afd, estadosAFD[i]);
 		}
+		free_tData(inter);  // Liberamos siempre, intersectionSet puede devolver NULL o un conjunto
 	}
 }
 
@@ -158,7 +148,7 @@ Af AFNDtoAFD(const Af afnd) {
 		tData currentState = estadosAFD[i];
 		tData sigmaNode = tData_getFirst(getAlphabet(afnd));
 		while (sigmaNode) {
-			tData destSet = computeNextSet(afnd, currentSet, sigmaNode);
+			tData destSet = computeStates(afnd, currentSet, sigmaNode);
 			if (destSet != NULL) {
 				int idx = obtenerOCrearIndice(afd, destSet, &subConjuntos, &estadosAFD, &numConjuntos);
 				agregarTransicionAFD(afd, currentState, sigmaNode, idx, estadosAFD);

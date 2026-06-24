@@ -25,5 +25,6 @@ void limpiarBuffer();					// Modulo auxiliar para limpiar el buffer
 str crearNodo(char c); 					// Crea un nuevo nodo con el carácter especificado
 void freeStr(str* s); 					// Libera toda la memoria utilizada por una cadena
 str copyStr(str s);             		// Copia cadena
+char str_getFirst(str s);               // Retorna el primer caracter de una cadena.
 
 #endif

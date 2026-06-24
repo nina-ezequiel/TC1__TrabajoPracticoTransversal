@@ -49,7 +49,7 @@ int main() {
 			break;
 		}
 		case 5: {
-			printf("\n=== Conversion AFND -> AFD (nuevo ejemplo con 6 estados) ===\n");
+			printf("\n=== Conversion AFND -> AFD (ejemplo de TP) ===\n");
 			ejemploConversionAFND2();
 			break;
 		}

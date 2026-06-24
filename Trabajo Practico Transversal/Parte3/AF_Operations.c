@@ -39,7 +39,7 @@ DeltaEntry parseDeltaEntry(str s) {
 	return entry;
 }
 
-/* -------------------- addTransition (fusion) ------------------- */
+/* -------------------- addTransition ------------------- */
 void addTransition(DeltaEntry** delta, int* deltaCount, DeltaEntry newEntry) {
 	// Buscar si ya existe una transicion con el mismo origen y simbolo
 	for (int i = 0; i < *deltaCount; i++) {
@@ -64,9 +64,7 @@ void addTransition(DeltaEntry** delta, int* deltaCount, DeltaEntry newEntry) {
 }
 
 /* -------------------- readTransitions ------------------- */
-void readTransitions(DeltaEntry** delta, int* deltaCount,
-	tData Q_set, tData Sigma_set,
-	State* q0, tData* F) {
+void readTransitions(DeltaEntry** delta, int* deltaCount, tData Q_set, tData Sigma_set, State* q0, tData* F) {
 	int first = 1;
 	str finStr = loadStr2("fin");
 	while (1) {
@@ -99,12 +97,11 @@ void readTransitions(DeltaEntry** delta, int* deltaCount,
 		
 		// Definir estado inicial (primera transicion)
 		if (first) {
-			if (*q0) free_tData(*q0);
 			*q0 = copy_tData(entry.from);
 			first = 0;
 		}
 		
-		// Guardar transicion (fusionando)
+		// Guardar transicion
 		addTransition(delta, deltaCount, entry);
 	}
 	freeStr(&finStr);
@@ -123,7 +120,8 @@ void readTransitions(DeltaEntry** delta, int* deltaCount,
 		if (inclusionSet(Fset, Q_set)) {
 			*F = Fset;
 			break;
-		} else {
+		} 
+		else {
 			printf("\nLos estados ingresados no estan incluidos en Q. Vuelva a intentar: ");
 			free_tData(Fset);
 		}

@@ -70,12 +70,12 @@ void AF_addTransition(Af af, State from, Symbol sym, tData dests) {
 	addTransition(&af->delta, &af->deltaCount, newEntry);
 }
 
-/* -------------------- Creacion interactiva ------------------- */
-Af createAFinteractive(void) {
+/* -------------------- Creacion De AF desde la Consola ------------------- */
+Af createAF(void) {
 	Af af = newEmptyAF();
 	if (!af) return NULL;
 	
-	printf("\n=== Creacion interactiva del automata ===\n\n");
+	printf("\n=== Creacion desde Consola del Automata Finito ===\n\n");
 	printf("Ingrese las transiciones en el formato:\n\t origen,simbolo,destino\n\n");
 	printf("Para multiples destinos ingrese las transiciones en el formato:\n\t origen,simbolo,dest1,dest2,...,dest_n\n\n");
 	printf("Escriba 'fin' para terminar.\n");
@@ -98,15 +98,11 @@ Af createAFinteractive(void) {
 		return NULL;
 	}
 	
-	free_tData(af->Q);
 	af->Q = Q_set;
-	free_tData(af->Sigma);
 	af->Sigma = Sigma_set;
 	af->delta = delta;
 	af->deltaCount = deltaCount;
-	if (af->q0) free_tData(af->q0);
 	af->q0 = q0;
-	free_tData(af->F);
 	af->F = F;
 	
 	return af;
@@ -132,21 +128,21 @@ tData getDestinations(const Af af, State from, Symbol sym) {
 	return NULL;
 }
 
-static int acceptRecursive(const Af af, tData currentStates, str input) {
-	if (input == NULL) {
-		tData it = tData_getFirst(currentStates);
-		while (it) {
-			if (pertainSet(it, af->F)) return 1;
-			it = tData_getNext(it);
+static int acceptRecursive(const Af af, tData currentStates, str string) {
+	if (string == NULL) {
+		tData state = tData_getFirst(currentStates);
+		while (state) {
+			if (pertainSet(state, af->F)) return 1;
+			state = tData_getNext(state);
 		}
 		return 0;
 	}
-	char symBuf[2] = {input->car, '\0'};
+	char symBuf[2] = {str_getFirst(string), '\0'};
 	Symbol sym = newNodeStrHard(loadStr2(symBuf));
-	tData nextSet = computeNextSet(af, currentStates, sym);
+	tData possibleStates = computeStates(af, currentStates, sym);
 	free_tData(sym);
-	int result = acceptRecursive(af, nextSet, input->next);
-	free_tData(nextSet);
+	int result = acceptRecursive(af, possibleStates, string->next);
+	free_tData(possibleStates);
 	return result;
 }
 

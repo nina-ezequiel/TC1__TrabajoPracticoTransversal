@@ -27,7 +27,7 @@ typedef Automata* Af;
 
 // Creacion y destruccion
 Af newEmptyAF(void);
-Af createAFinteractive(void);
+Af createAF(void);
 void freeAF(Af af);
 
 // Consulta de los componentes de la 5-upla (solo lectura)
@@ -39,7 +39,7 @@ const DeltaEntry* getDelta(const Af af);
 int getDeltaCount(const Af af);
 tData getDestinations(const Af af, State from, Symbol sym);
 
-// Propiedades y reconocimiento
+// Consultar determinismo y aceptacion
 int isDeterministic(const Af af);
 int acceptString(const Af af, str cadena);
 int acceptHardcoded(const Af af, const char* cadena);

@@ -7,7 +7,8 @@ DeltaEntry parseDeltaEntry(str s) {
 	
 	// Origen (antes de la 1ª coma)
 	str fromStr = beforeToken(s, ',');
-	if (fromStr == NULL) return entry;
+	if (fromStr == NULL) 
+		return entry;
 	entry.from = newNodeStrHard(fromStr);
 	freeStr(&fromStr);
 	
@@ -68,6 +69,7 @@ void readTransitions(DeltaEntry** delta, int* deltaCount, tData Q_set, tData Sig
 	int first = 1;
 	str finStr = loadStr2("fin");
 	while (1) {
+		
 		printf("d(estado,simbolo) = ");
 		str s = loadStr();
 		if (equalStr(s, finStr)) {
@@ -83,7 +85,6 @@ void readTransitions(DeltaEntry** delta, int* deltaCount, tData Q_set, tData Sig
 			if (entry.destinations) free_tData(entry.destinations);
 			continue;
 		}
-		
 		// Agregar 'from' a Q_set
 		tData_addToSet(Q_set, copy_tData(entry.from));
 		// Agregar todos los destinos a Q_set
@@ -94,23 +95,19 @@ void readTransitions(DeltaEntry** delta, int* deltaCount, tData Q_set, tData Sig
 		}
 		// Agregar simbolo a Sigma_set
 		tData_addToSet(Sigma_set, copy_tData(entry.symbol));
-		
 		// Definir estado inicial (primera transicion)
 		if (first) {
 			*q0 = copy_tData(entry.from);
 			first = 0;
 		}
-		
 		// Guardar transicion
 		addTransition(delta, deltaCount, entry);
 	}
 	freeStr(&finStr);
-	
 	if (*deltaCount == 0) {
 		*F = NULL;
 		return;
 	}
-	
 	// Leer estados finales
 	while (1) {
 		printf("\nAhora ingrese el/los estado/s final/es (separados por comas): ");

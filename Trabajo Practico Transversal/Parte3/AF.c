@@ -147,7 +147,8 @@ static int acceptRecursive(const Af af, tData currentStates, str string) {
 }
 
 int acceptString(const Af af, str cadena) {
-	if (!af || !cadena) return 0;
+	if (!af || !cadena) 
+		return 0;
 	tData startState = newEmptyNodeSet();
 	tData_addToSet(startState, copy_tData(af->q0));
 	int accepted = acceptRecursive(af, startState, cadena);

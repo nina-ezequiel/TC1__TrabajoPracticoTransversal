@@ -49,7 +49,7 @@ tData strToList(tData str);								// Conversion STR -> LIST
 tData listToStr(tData list);							// Conversion LIST -> STR
 tData strToSet(tData str);								// Conversion STR -> SETtData setToStr(tData set);								
 tData setToStr(tData set);								// Conversion SET -> STR
-tData strToSetToken(str s, char token);
+tData strToSetToken(str s, char token);   
 
 int tData_getType(tData d);               				// obtiene nodeType
 str tData_getStr(tData d);                				// obtiene el string si es STR

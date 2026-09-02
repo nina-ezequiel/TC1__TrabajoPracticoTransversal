@@ -10,6 +10,6 @@ Af AFNDtoAFD(const Af afnd);
 
 // Calcula el conjunto de estados alcanzables desde un conjunto dado con un símbolo.
 // Retorna un nuevo conjunto (tData) o NULL si no hay transiciones.
-tData computeNextSet(const Af af, tData currentStates, Symbol sym);
+tData computeStates(const Af af, tData currentStates, Symbol sym);
 
 #endif

@@ -3,9 +3,9 @@
 #include "AF_Converter.h"
 
 void ejemploAFD1();                     // AFD que reconoce cantidad impar de ceros
-void ejemploAFD2();                     // AFD que reconoce numeros binarios divisibles por 3
-void ejemploAFND1();                    // AFND para penultima letra 'a' (solo muestra y prueba)
-void ejemploConversionPenultimaA();     // Construye AFND penultima 'a' y lo convierte a AFD
+void ejemploAFD2();                     // AFD que reconoce números binarios divisibles por 3
+void ejemploAFND1();                    // AFND para penúltima letra 'a' (solo muestra y prueba)
+void ejemploConversionPenultimaA();     // Construye AFND penúltima 'a' y lo convierte a AFD
 void ejemploConversionAFND2();          // Construye AFND de 6 estados (ejemplo TP) y lo convierte a AFD
 
 int main() {
@@ -25,7 +25,7 @@ int main() {
 		switch (opcion) {
 		case 1: {
 			printf("\n========== AFD ==========\n");
-			ejemploAFD1();
+			ejemploAFD2();
 			break;
 		}
 		case 2: {
@@ -34,9 +34,10 @@ int main() {
 			break;
 		}
 		case 3: {
-			Af af3 = createAFinteractive();
+			Af af3 = createAF();
 			if (af3) {
 				printAF(af3);
+				printf("\nAcepta?: %s", acceptFromConsole(af3)? "Si" : "No");
 				freeAF(af3);
 			} else {
 				printf("Error al crear el automata.\n");
@@ -49,7 +50,7 @@ int main() {
 			break;
 		}
 		case 5: {
-			printf("\n=== Conversion AFND -> AFD (ejemplo de TP) ===\n");
+			printf("\n=== Conversion AFND -> AFD (nuevo ejemplo con 6 estados) ===\n");
 			ejemploConversionAFND2();
 			break;
 		}
@@ -132,6 +133,18 @@ void ejemploAFD2() {
 	AF_addTransition(afd, q2, sym0, dest_q1);
 	AF_addTransition(afd, q2, sym1, dest_q2);
 	
+	/*
+	
+	q0,0,q0
+	q0,1,q1
+	q1,0,q2
+	q1,1,q0
+	q2,0,q1
+	q2,1,q2
+	
+	final = q0
+	*/
+	
 	free_tData(dest_q0);
 	free_tData(dest_q1);
 	free_tData(dest_q2);
@@ -143,12 +156,12 @@ void ejemploAFD2() {
 	
 	printAF(afd);
 	printf("\n--- Pruebas de aceptacion (Numero Binario Divisible por 3)---\n");
-	printf("\"10\"      : %s\n", acceptHardcoded(afd, "10") ? "Aceptada" : "Rechazada");
-	printf("\"111\"     : %s\n", acceptHardcoded(afd, "111") ? "Aceptada" : "Rechazada");
-	printf("\"1000\"    : %s\n", acceptHardcoded(afd, "1000") ? "Aceptada" : "Rechazada");
-	printf("\"1100\"     : %s\n", acceptHardcoded(afd, "1100") ? "Aceptada" : "Rechazada");
-	printf("\"1111\"   : %s\n", acceptHardcoded(afd, "1111") ? "Aceptada" : "Rechazada");
-	printf("\"10010\" : %s\n", acceptHardcoded(afd, "10010") ? "Aceptada" : "Rechazada");
+	printf("\"11 (3 decimal)\"      : %s\n", acceptHardcoded(afd, "11") ? "Aceptada" : "Rechazada");
+	printf("\"110 (6 decimal)\"     : %s\n", acceptHardcoded(afd, "110") ? "Aceptada" : "Rechazada");
+	printf("\"1001 (9 decimal)\"    : %s\n", acceptHardcoded(afd, "1001") ? "Aceptada" : "Rechazada");
+	printf("\"10 (2 decimal)\"      : %s\n", acceptHardcoded(afd, "10") ? "Aceptada" : "Rechazada");
+	printf("\"100 (4 decimal)\"     : %s\n", acceptHardcoded(afd, "100") ? "Aceptada" : "Rechazada");
+	printf("\"111 (7 decimal)\"     : %s\n", acceptHardcoded(afd, "111") ? "Aceptada" : "Rechazada");
 	
 	freeAF(afd);
 }
@@ -241,10 +254,29 @@ void ejemploConversionPenultimaA() {
 	printf("\n--- AFND original ---\n");
 	printAF(afnd);
 	
+	printf("\n--- Pruebas AFND (penultima letra = 'a') ---\n");
+	printf("\"bab\"   : %s\n", acceptHardcoded(afnd, "bab") ? "Aceptada" : "Rechazada");
+	printf("\"ab\"    : %s\n", acceptHardcoded(afnd, "ab") ? "Aceptada" : "Rechazada");
+	printf("\"abaa\"  : %s\n", acceptHardcoded(afnd, "abaa") ? "Aceptada" : "Rechazada");
+	printf("\"abbab\" : %s\n", acceptHardcoded(afnd, "abbab") ? "Aceptada" : "Rechazada");
+	printf("\"ba\"    : %s\n", acceptHardcoded(afnd, "ba") ? "Aceptada" : "Rechazada");
+	printf("\"a\"     : %s\n", acceptHardcoded(afnd, "a") ? "Aceptada" : "Rechazada");
+	printf("\"bb\"    : %s\n", acceptHardcoded(afnd, "bb") ? "Aceptada" : "Rechazada");
+	printf("\"aba\"   : %s\n", acceptHardcoded(afnd, "aba") ? "Aceptada" : "Rechazada");
+	
 	Af afd = AFNDtoAFD(afnd);
 	if (afd) {
 		printf("\n--- AFD convertido (renombrado) ---\n");
 		printAF(afd);
+		printf("\n--- Pruebas AFD (penultima letra = 'a') ---\n");
+		printf("\"bab\"   : %s\n", acceptHardcoded(afd, "bab") ? "Aceptada" : "Rechazada");
+		printf("\"ab\"    : %s\n", acceptHardcoded(afd, "ab") ? "Aceptada" : "Rechazada");
+		printf("\"abaa\"  : %s\n", acceptHardcoded(afd, "abaa") ? "Aceptada" : "Rechazada");
+		printf("\"abbab\" : %s\n", acceptHardcoded(afd, "abbab") ? "Aceptada" : "Rechazada");
+		printf("\"ba\"    : %s\n", acceptHardcoded(afd, "ba") ? "Aceptada" : "Rechazada");
+		printf("\"a\"     : %s\n", acceptHardcoded(afd, "a") ? "Aceptada" : "Rechazada");
+		printf("\"bb\"    : %s\n", acceptHardcoded(afd, "bb") ? "Aceptada" : "Rechazada");
+		printf("\"aba\"   : %s\n", acceptHardcoded(afd, "aba") ? "Aceptada" : "Rechazada");
 		freeAF(afd);
 	} else {
 		printf("Error en la conversion.\n");
@@ -328,13 +360,28 @@ void ejemploConversionAFND2() {
 	free_tData(q0); free_tData(q1); free_tData(q2); free_tData(q3); free_tData(q4); free_tData(q5);
 	free_tData(sym0); free_tData(sym1);
 	
-	printf("\n--- AFND original (6 estados) ---\n");
 	printAF(afnd);
+	
+	printf("\n--- AFND original (6 estados) ---\n");
+	printf("\n--- Pruebas de aceptacion (ejemplo de tp) ---\n");
+	printf("\"111\"     : %s\n", acceptHardcoded(afnd, "111")? "Aceptada" : "Rechazada");
+	printf("\"0\"       : %s\n", acceptHardcoded(afnd, "0")? "Aceptada" : "Rechazada");
+	printf("\"00\"      : %s\n", acceptHardcoded(afnd, "00")? "Aceptada" : "Rechazada");
+	printf("\"1011\"    : %s\n", acceptHardcoded(afnd, "1011")? "Aceptada" : "Rechazada");
+	printf("\"010\"     : %s\n", acceptHardcoded(afnd, "010")? "Aceptada" : "Rechazada");
+	printf("\"10100\"   : %s\n", acceptHardcoded(afnd, "10100")? "Aceptada" : "Rechazada");
 	
 	Af afd = AFNDtoAFD(afnd);
 	if (afd) {
 		printf("\n--- AFD convertido (renombrado) ---\n");
 		printAF(afd);
+		printf("\n--- Pruebas de aceptacion (ejemplo de tp) ---\n");
+		printf("\"111\"   : %s\n", acceptHardcoded(afd, "111") ? "Aceptada" : "Rechazada");
+		printf("\"0\"     : %s\n", acceptHardcoded(afd, "0") ? "Aceptada" : "Rechazada");
+		printf("\"00\"    : %s\n", acceptHardcoded(afd, "00") ? "Aceptada" : "Rechazada");
+		printf("\"1011\"  : %s\n", acceptHardcoded(afd, "1011") ? "Aceptada" : "Rechazada");
+		printf("\"010\"   : %s\n", acceptHardcoded(afd, "010") ? "Aceptada" : "Rechazada");
+		printf("\"10100\" : %s\n", acceptHardcoded(afd, "10100") ? "Aceptada" : "Rechazada");
 		freeAF(afd);
 	} else {
 		printf("Error en la conversion.\n");
